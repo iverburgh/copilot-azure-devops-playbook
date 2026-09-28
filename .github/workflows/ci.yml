@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  leak-check:
+    name: No internal references
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Scan for organisation-specific references
+        shell: pwsh
+        run: ./tools/Test-NoInternalReferences.ps1
+        env:
+          # Names that must never be published live in a secret, not in the repository.
+          FORBIDDEN_TERMS: ${{ secrets.FORBIDDEN_TERMS }}
+
+  customization-files:
+    name: Agents, skills and prompts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validate frontmatter and cross-references
+        shell: pwsh
+        run: ./tools/Test-CustomizationFiles.ps1
+
+  links:
+    name: Documentation links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check relative links and anchors
+        shell: pwsh
+        run: ./tools/Test-DocumentationLinks.ps1
