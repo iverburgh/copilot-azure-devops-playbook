@@ -119,7 +119,7 @@ walks through both.
 
 ## Related playbooks
 
-Two companion repositories cover topics that agents in this playbook touch:
+Companion repositories cover topics that agents in this playbook touch:
 
 - [renovate-azure-devops-playbook](https://github.com/iverburgh/renovate-azure-devops-playbook) —
   automated dependency updates with Renovate on Azure DevOps: a bot opens the pull requests, the
@@ -128,6 +128,9 @@ Two companion repositories cover topics that agents in this playbook touch:
   settings, feature flags and Key Vault references as code, deployed and rolled back together with
   the application. The background for the
   [feature flag instructions](.github/instructions/feature-flags.instructions.md).
+- [ddd-dotnet-playbook](https://github.com/iverburgh/ddd-dotnet-playbook) — bounded contexts,
+  aggregates, domain events and the outbox in a working .NET solution: the architecture that the
+  layer instructions and the developer and reviewer agents here guard.
 
 ## Further reading
 
