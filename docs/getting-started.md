@@ -6,7 +6,9 @@ hour; step 4 is where the real decisions are.
 ## 1. Check the prerequisites
 
 - **VS Code with GitHub Copilot**, agent mode enabled. Custom agents, skills and prompt files are
-  picked up from `.github/` automatically.
+  picked up from `.github/` automatically. Copilot CLI and the Copilot app read the same agents,
+  skills and instructions, but not the prompt files; see
+  [copilot-cli-and-app.md](copilot-cli-and-app.md).
 - **Azure CLI** with the DevOps extension: `az extension add --name azure-devops`.
 - **Logged in**: `az login`. The scripts get their token with `az account get-access-token`, so no
   personal access token is needed and none expires on someone's last day.
@@ -25,6 +27,7 @@ hour; step 4 is where the real decisions are.
 | `.github/instructions/*` | `.github/instructions/` — only the ones that match your stack |
 | `.github/prompts/*` | `.github/prompts/` |
 | `templates/copilot-instructions.azure-devops.md` | paste into `.github/copilot-instructions.md` |
+| `templates/copilot-settings.json`, `lsp.json`, `github-app.yml` | optional, for Copilot CLI and the app; see [copilot-cli-and-app.md](copilot-cli-and-app.md) |
 
 Take only what you use. The dependencies between the parts:
 
@@ -33,10 +36,19 @@ Take only what you use. The dependencies between the parts:
 | PBI Refiner | skills `azure-devops-cli`, `azure-devops-rest-writes`, `functional-design-wiki`, `adr-compliance` |
 | PBI Planner | skills `azure-devops-cli`, `azure-devops-rest-writes`, `rep-protocol`, `specialist-routing` |
 | Specialists | skills `rep-protocol`, `specialist-routing` |
+| Functional Reviewer | skill `azure-devops-cli` for the backlog item |
+| Code Quality Reviewer | nothing |
 | Azure Issue Investigator | skill `azure-log-analytics` |
 | PR Pipeline Analyzer | skill `azure-devops-pipeline-logs` |
+| Pipeline Failure Analyzer | Azure CLI only; skill `azure-devops-pipeline-logs` optional |
 | Technical spike research mode | skill `create-technical-spike` |
 | `/pr-description` | `pull-requests.instructions.md` |
+| `/review` | Functional Reviewer |
+| `/analyze-build` | Pipeline Failure Analyzer |
+
+These skills work on their own, without any agent: `dotnet-build` (short build and test output),
+`pr-review-coach` (a guided review of your own branch) and `path-filter-sync` (keep pipeline and
+branch policy path filters in line with project references).
 
 The path-specific instruction files are independent of the agents: every agent, and Copilot without
 an agent, picks them up for the files it edits. See [instructions.md](instructions.md).
@@ -85,12 +97,25 @@ The PBI Refiner checks items against the functional design and the ADRs. Point i
 
 ## 6. Try it
 
-Open Copilot Chat and run, in this order, on a small backlog item:
+Open Copilot Chat and run, in this order, on a small backlog item. The short path:
+
+1. `/refine 1234`
+2. Implement the change yourself, or with Copilot in agent mode.
+3. `/review 1234` — the Functional Reviewer; when it approves, run the Code Quality Reviewer as the
+   second gate.
+4. `/pr-description`
+
+The full path, with tasks per pull request, REPs and specialists, is an optional advanced workflow
+described in [planning-and-reps.md](planning-and-reps.md):
 
 1. `/refine 1234`
 2. `/breakdown-pbi 1234`
 3. `/create-rep 1240` for one of the created tasks
 4. `/implement-rep Backend Developer 1240`
-5. `/pr-description`
+5. `/review 1240`
+6. `/pr-description`
+
+When a build fails: `/analyze-build <build id>` for one pipeline run, or the PR Pipeline Analyzer for
+every failing check on a pull request.
 
 Every step that writes to Azure DevOps asks for confirmation first.

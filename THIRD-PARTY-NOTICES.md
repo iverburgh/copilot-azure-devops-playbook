@@ -12,9 +12,14 @@ against upstream to pick up improvements.
 |---|---|
 | [.github/agents/research-technical-spike.agent.md](.github/agents/research-technical-spike.agent.md) | `agents/research-technical-spike.agent.md` |
 | [.github/skills/create-technical-spike/](.github/skills/create-technical-spike/SKILL.md) | `skills/create-technical-spike/` |
-| [.github/skills/azure-devops-cli/](.github/skills/azure-devops-cli/SKILL.md) | `skills/azure-devops-cli/` (SKILL.md and all `references/`) |
+| [.github/skills/azure-devops-cli/](.github/skills/azure-devops-cli/SKILL.md) | `skills/azure-devops-cli/` (SKILL.md and all `references/`), with one exception listed below |
 | [.github/instructions/azure-devops-pipelines.instructions.md](.github/instructions/azure-devops-pipelines.instructions.md) | `instructions/azure-devops-pipelines.instructions.md` |
 | [.github/instructions/powershell.instructions.md](.github/instructions/powershell.instructions.md) | `instructions/powershell.instructions.md` |
+
+The one change: [references/workflows-and-patterns.md](.github/skills/azure-devops-cli/references/workflows-and-patterns.md)
+has a quoted "Playbook note (not upstream)" above the *Branch Policy Automation* example, telling an
+agent not to change branch policies without an explicit request. Remove that note before diffing
+against upstream.
 
 ## Derived from awesome-copilot
 
@@ -40,8 +45,9 @@ gh skills install github/awesome-copilot create-technical-spike
 ```
 
 Everything else — the Azure DevOps write patterns, the REP protocol, the specialist agents, the
-investigation agents and the remaining instruction files — is original to this repository and
-covered by its own [LICENSE](LICENSE).
+reviewers, the investigation agents, the remaining skills (including the `dotnet-build` script) and
+the remaining instruction files — is original to this repository and covered by its own
+[LICENSE](LICENSE).
 
 ## awesome-copilot license
 

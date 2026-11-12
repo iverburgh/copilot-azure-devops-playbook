@@ -2,8 +2,9 @@
 
 [![CI](https://github.com/iverburgh/copilot-azure-devops-playbook/actions/workflows/ci.yml/badge.svg)](https://github.com/iverburgh/copilot-azure-devops-playbook/actions/workflows/ci.yml)
 
-Custom agents, skills and prompts for GitHub Copilot in VS Code that take a backlog item from rough
-idea to merged pull request on Azure DevOps — and that investigate what goes wrong afterwards.
+Custom agents, skills and prompts for GitHub Copilot in VS Code, Copilot CLI and the Copilot app that
+take a backlog item from rough idea to merged pull request on Azure DevOps — and that investigate
+what goes wrong afterwards.
 
 Most published Copilot customizations assume GitHub: issues, GitHub Actions, the GitHub MCP server.
 Teams on Azure DevOps get little of that, and the Azure CLI has a few traps that silently destroy
@@ -20,12 +21,15 @@ documentation.
 |---|---|
 | Install this in your own repository | [docs/getting-started.md](docs/getting-started.md) |
 | Refine a backlog item — against the functional design and the ADRs | [docs/refinement.md](docs/refinement.md) |
-| Break an item into tasks, write REPs, and let specialists implement them | [docs/planning-and-reps.md](docs/planning-and-reps.md) |
+| Break an item into tasks, write REPs, and let specialists implement them (advanced, optional) | [docs/planning-and-reps.md](docs/planning-and-reps.md) |
+| Have a change reviewed for correctness and quality before a human sees it | [docs/reviews.md](docs/reviews.md) |
 | Get a pull request title and description from your branch | [docs/pull-request-descriptions.md](docs/pull-request-descriptions.md) |
 | Find the root cause of a production issue | [docs/azure-issue-investigation.md](docs/azure-issue-investigation.md) |
 | Find out why the builds on a pull request fail | [docs/pr-pipeline-analysis.md](docs/pr-pipeline-analysis.md) |
 | Research an open technical question | [docs/technical-spikes.md](docs/technical-spikes.md) |
+| Let an agent guide a risky operation, such as a database restore, safely | [docs/agentic-runbooks.md](docs/agentic-runbooks.md) |
 | Understand how instructions, skills, agents and prompts fit together | [docs/instructions.md](docs/instructions.md) |
+| Use all of this from Copilot CLI or the Copilot app | [docs/copilot-cli-and-app.md](docs/copilot-cli-and-app.md) |
 | **Avoid the traps that silently lose data** | **[docs/pitfalls.md](docs/pitfalls.md)** |
 
 ## The workflow
@@ -34,19 +38,22 @@ documentation.
 flowchart LR
     idea[Rough backlog item] -->|/refine| refiner[PBI Refiner]
     refiner -->|functional design + ADR check,<br/>open points as multiple choice| refined[Refined item]
-    refined -->|/breakdown-pbi| planner[PBI Planner]
-    planner --> tasks[Tasks with REP content,<br/>one branch and PR each]
-    tasks -->|/create-rep| rep[Local REP]
-    rep -->|/implement-rep| specialists[Specialists]
-    specialists -->|/pr-description| pr[Draft pull request]
-    pr -->|red build| analyzer[PR Pipeline Analyzer]
+    refined -->|implement| code[Change on a branch]
+    refined -.->|advanced: /breakdown-pbi| planner[PBI Planner]
+    planner -.-> tasks[Tasks with REP content,<br/>one branch and PR each]
+    tasks -.->|/create-rep, /implement-rep| specialists[Specialists]
+    specialists -.-> code
+    code -->|/review| reviewers[Functional Reviewer,<br/>then Code Quality Reviewer]
+    reviewers -->|/pr-description| pr[Draft pull request]
+    pr -->|red build| analyzer[PR Pipeline Analyzer,<br/>Pipeline Failure Analyzer]
     prod[Production issue] --> investigator[Azure Issue Investigator]
     question[Open technical question] --> spike[Technical spike]
     investigator -->|follow-up items| idea
     spike -->|follow-up items| idea
 ```
 
-Each step works on its own; you do not need the whole chain to get value from one agent.
+Each step works on its own; you do not need the whole chain to get value from one agent. The dotted
+path is the advanced REP workflow.
 
 ## What each part gives you
 
@@ -56,21 +63,32 @@ Each step works on its own; you do not need the whole chain to get value from on
   the design or an ADR stops the refinement until you explicitly confirm which one wins. Open points
   come back as **multiple-choice questions**, which turns a refinement session into a few clicks.
   The same question style works for any task (`/clarify-open-points`).
-- **PBI Planner** breaks a refined item into Azure DevOps tasks that **each go through their own
-  branch and pull request**, ordered so every PR is deployable on its own, and each carrying as much
-  detail as a REP. Test-driven by default.
-- **REPs** (Refined Execution Packets) are the contract for one task: what must be true afterwards,
-  not how to write it. A REP names the **specialists** it needs — backend, database, frontend,
-  platform, testers — and each can be run separately: *"Implement the REP for specialist X"*.
+- **PBI Planner** *(advanced)* breaks a refined item into Azure DevOps tasks that **each go through
+  their own branch and pull request**, ordered so every PR is deployable on its own, and each
+  carrying as much detail as a REP. Test-driven by default.
+- **REPs** *(advanced)* (Refined Execution Packets) are the contract for one task: what must be true
+  afterwards, not how to write it. A REP names the **specialists** it needs — backend, database,
+  frontend, platform, testers — and each can be run separately: *"Implement the REP for specialist
+  X"*. This is the workflow the author uses daily on larger items; the rest of the playbook does not
+  depend on it.
+- **Functional Reviewer** and **Code Quality Reviewer** are two review gates before a human looks:
+  first whether the change does the right thing in the right place and is safe to deploy, then
+  whether it was built cleanly. Both end with a machine-readable outcome.
 - **PR descriptions** from the branch diff, around 2000 characters, never above the 4000 that Azure
   DevOps accepts.
 - **Azure Issue Investigator** combines Application Insights and Log Analytics with the code to get
   to one or more root causes, and advises on mitigation now, a temporary fix, and follow-up items.
 - **PR Pipeline Analyzer** takes a pull request number and explains every failing build, test and
-  task, separating what the PR broke from what was already broken or flaky.
+  task, separating what the PR broke from what was already broken or flaky. The **Pipeline Failure
+  Analyzer** does the same, quickly, for one pipeline run.
 - **Technical spike research mode** turns a question like *"we want messages delivered idempotently
   — where do we stand and what do you recommend?"* into a researched recommendation and follow-up
   items.
+- **Skills that stand alone:** `dotnet-build` keeps build and test output to what failed,
+  `pr-review-coach` walks you through reviewing your own branch, and `path-filter-sync` keeps
+  pipeline and branch policy path filters in line with project references.
+- **Instructions** for every layer, including a test instruction that produces readable .NET
+  component and unit tests, and feature flag rules.
 
 ## What's in here
 
@@ -78,18 +96,19 @@ Each step works on its own; you do not need the whole chain to get value from on
 .github/agents/        Custom agents (select them in the Copilot chat agent picker)
 .github/skills/        Skills the agents load on demand, some with PowerShell scripts
 .github/instructions/  Coding conventions that load automatically for the files being edited
-.github/prompts/       Slash commands for the everyday instructions
-templates/             The configuration block to paste into your copilot-instructions.md
+.github/prompts/       Slash commands for the everyday instructions (VS Code)
+templates/             The block to paste into your copilot-instructions.md, and optional
+                       Copilot CLI and app configuration
 docs/                  How to use each workflow, and the pitfalls behind the design
 tools/                 Checks that keep this repository honest, also run in CI
 ```
 
 Some files come from [github/awesome-copilot](https://github.com/github/awesome-copilot): the
 **Technical spike research mode** agent, the **azure-devops-cli** and **create-technical-spike**
-skills and the **Azure DevOps pipelines** and **PowerShell** instructions unmodified; the **C#** and
-**Pester** instructions derived from upstream versions. See
-[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the pinned commit and license. Everything else
-is original to this repository.
+skills and the **Azure DevOps pipelines** and **PowerShell** instructions unmodified (apart from one
+marked safety note in the azure-devops-cli references); the **C#** and **Pester** instructions
+derived from upstream versions. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the pinned
+commit and license. Everything else is original to this repository.
 
 ## Adapting this to your repository
 
@@ -98,12 +117,26 @@ one block in your `copilot-instructions.md`, and the specialists decide who owns
 path-mapping table that must match your layout. [docs/getting-started.md](docs/getting-started.md)
 walks through both.
 
+## Related playbooks
+
+Two companion repositories cover topics that agents in this playbook touch:
+
+- [renovate-azure-devops-playbook](https://github.com/iverburgh/renovate-azure-devops-playbook) —
+  automated dependency updates with Renovate on Azure DevOps: a bot opens the pull requests, the
+  build is the check.
+- [azure-app-configuration-playbook](https://github.com/iverburgh/azure-app-configuration-playbook) —
+  settings, feature flags and Key Vault references as code, deployed and rolled back together with
+  the application. The background for the
+  [feature flag instructions](.github/instructions/feature-flags.instructions.md).
+
 ## Further reading
 
 - [Custom agents in VS Code](https://code.visualstudio.com/docs/copilot/customization/custom-agents),
   [agent skills](https://code.visualstudio.com/docs/copilot/customization/agent-skills) and
   [prompt files](https://code.visualstudio.com/docs/copilot/customization/prompt-files) — the
   reference for every file type used here.
+- [Customization cheat sheet](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
+  — which customization works in which surface, including Copilot CLI.
 - [github/awesome-copilot](https://github.com/github/awesome-copilot) — the community collection
   this playbook borrows from and complements.
 - [Azure DevOps CLI](https://learn.microsoft.com/azure/devops/cli/) and the

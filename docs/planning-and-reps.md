@@ -1,10 +1,19 @@
 # Planning, REPs and specialists
 
+This is the advanced, optional part of the playbook: the workflow the author uses every day on
+larger items. You do not need it to get value from the other agents. The lighter path is refine,
+implement, `/review`, pull request; see [getting-started.md](getting-started.md#6-try-it). Reach
+for REPs and specialists when an item spans several layers, needs more than one pull request, or
+when you want an agent to work on a well-defined task while you review.
+
 From a refined backlog item to code, in three steps that each have their own command:
 
 1. **Break the item down** into tasks, one branch and pull request each — `/breakdown-pbi <id>`.
 2. **Create a REP** for the task you pick up — `/create-rep <task id>`.
 3. **Implement the REP**, one specialist at a time — `/implement-rep <specialist> <task id>`.
+
+After implementation, `/review <task id>` runs the Functional Reviewer; the Code Quality Reviewer
+is the second gate, the same two gates as on the lighter path. See [reviews.md](reviews.md).
 
 ## 1. Breaking an item into tasks
 

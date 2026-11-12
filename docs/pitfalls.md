@@ -90,6 +90,44 @@ merge base, so changes on the target branch do not show up as the PR's.
 Azure DevOps rejects longer descriptions. Aim for about 2000; that is also roughly where reviewers
 stop reading.
 
+### "Fix the pipeline" is not permission to change a branch policy
+
+Asked to get a pull request green, an agent with the Azure CLI can widen a build validation path
+filter or switch a policy off, and the build passes. That is a change to protected configuration
+that nobody asked for. Put the branch policy rule from the
+[template](../templates/copilot-instructions.azure-devops.md) in your `copilot-instructions.md`:
+read-only inspection is fine, any policy change needs an explicit request for that exact change.
+
+### Path filters live in two places
+
+A pipeline's YAML trigger and the build validation policy on the integration branch each have
+their own path filter, in a different syntax. Add a project reference and update only one, and a
+pull request either skips a build it needs or runs one it does not. The
+[`path-filter-sync`](../.github/skills/path-filter-sync/SKILL.md) skill checks both.
+
+## Agents and long-running work
+
+### Full build output eats the context
+
+`dotnet build` and `dotnet test` print hundreds of lines on success. An agent reading all of them
+loses room for the code, and the one error that matters scrolls past. The
+[`dotnet-build`](../.github/skills/dotnet-build/SKILL.md) skill runs them quietly and shows only
+errors and failed tests. Builds can take minutes; let them finish instead of cancelling and
+starting again.
+
+### An agent interrupts long steps
+
+Agents tend to move a long command to the background, then poll for its result, or stop to ask what
+to do while it is still running. For a restore or a deployment, that is dangerous. Write in the
+skill that the step must run to completion, and let the script print one clear marker when it is
+done. See [agentic-runbooks.md](agentic-runbooks.md).
+
+### The agent assumes an environment
+
+A runbook that starts with a dry-run against "the current subscription" can read production when
+you meant test. Make the first question always *which environment*, and run nothing until the user
+names it.
+
 ## Terminal and CLI
 
 ### Multi-line commands get cut off

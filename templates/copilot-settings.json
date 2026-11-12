@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "team-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://dev.azure.com/<organization>/<project>/_git/<marketplace-repository>"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "<plugin-name>@team-plugins": true
+  }
+}

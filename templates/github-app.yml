@@ -1,0 +1,5 @@
+scripts:
+  - name: Install Git hooks
+    command: dotnet tool restore && dotnet husky install
+    triggers:
+      - session.create

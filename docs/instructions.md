@@ -9,7 +9,24 @@ where a rule belongs.
 | Path instructions | `.github/instructions/*.instructions.md` | Automatically, when a file matching `applyTo` is read or edited | Coding conventions for one layer or file type |
 | Skills | `.github/skills/*/SKILL.md` | On demand, when the task matches the description | Procedures and knowledge, often with scripts |
 | Agents | `.github/agents/*.agent.md` | When selected in the agent picker or started as a subagent | A role: goal, scope, workflow, output format |
-| Prompts | `.github/prompts/*.prompt.md` | When you type `/<name>` | One reusable instruction, optionally bound to an agent |
+| Prompts | `.github/prompts/*.prompt.md` | When you type `/<name>` (VS Code and Visual Studio; not Copilot CLI) | One reusable instruction, optionally bound to an agent |
+
+Around these four sit a few configuration files that decide what is available rather than what
+the agent is told:
+
+| File | Holds |
+|---|---|
+| `.github/copilot/settings.json` | Plugin marketplaces and plugins enabled by default for the repository |
+| `.github/lsp.json` | Language servers the CLI uses for precise code navigation |
+| `.github/github-app.yml` | Instructions and setup scripts for the Copilot app |
+| `~/.copilot/` | Your personal instructions, agents and skills, for every repository |
+
+See [copilot-cli-and-app.md](copilot-cli-and-app.md) for all four, with templates.
+
+In VS Code's Local sessions, a path instruction with a `description` can also be loaded when the
+task matches that description, separately from `applyTo`. And a prompt that always needs one
+instruction file can reference it with a Markdown link or `#file:`, so it does not depend on which
+files happen to be open.
 
 ## How they work together
 
@@ -19,7 +36,7 @@ Take `/implement-rep Backend Developer 1240`:
 2. The agent loads the **`rep-protocol` skill** to validate the REP and the
    **`specialist-routing` skill** to know which paths it owns.
 3. The moment it opens `src/Orders/Domain/Order.cs`, the **domain-layer** and **C#** instructions load
-   by themselves; when it writes a test in `tests/`, the **component-tests** instructions do.
+   by themselves; when it writes a test in `tests/`, the **dotnet-tests** instructions do.
 4. Throughout, **`copilot-instructions.md`** supplies the build commands and the organization.
 
 The agent never mentions the instruction files. Conventions follow the file being edited, whichever
@@ -49,10 +66,11 @@ The `applyTo` globs assume the example layout used throughout this playbook — 
 | `domain-layer.instructions.md` | `src/**/Domain/**` | Value objects, entities, aggregates, domain events, domain services |
 | `application-layer.instructions.md` | `src/**/Application/**` | Thin handlers, result types, integration events after commit |
 | `infrastructure.instructions.md` | `src/**/Infrastructure/**` | EF Core configuration, the save pipeline, test providers |
-| `database.instructions.md` | `src/**/Database/**/*.sql` | Backwards-compatible migrations, deployment safety, change data capture impact per change |
-| `component-tests.instructions.md` | `tests/**` | Test at the system boundary, assert every consequence, in-memory infrastructure |
+| `database.instructions.md` | `src/**/Database/**/*.sql` | Changes that survive any deploy order, the three-PR column pattern, permission scripts, change data capture impact |
+| `dotnet-tests.instructions.md` | `tests/**, **/*Tests/**` | All .NET unit and component tests: system boundary, `fixture.Arrange`/`fixture.Assert`, every contract value covered, every consequence asserted |
 | `integration-tests.instructions.md` | `tests/Integration/**` | When to write them at all, scenario structure |
-| `frontend.instructions.md` | `ui/**` | React and TypeScript structure, typing, errors, linting |
+| `frontend.instructions.md` | `ui/**` | React and TypeScript structure, typing, forms, errors, linting |
+| `feature-flags.instructions.md` | `**/AppConfiguration.FeatureFlags.json, src/**, ui/**` | Flag naming, never renaming, fail-closed checks, testing both paths, clean-up |
 | `frontend-component-tests.instructions.md` | `ui/test/component/**` | File responsibilities, locator strategy, coverage levels |
 | `platform.instructions.md` | `infra/**, pipelines/**` | Generated files, Key Vault references, function bindings, deployment quirks |
 | `csharp.instructions.md` | `**/*.cs` | Language conventions, comments, nullability, cancellation |

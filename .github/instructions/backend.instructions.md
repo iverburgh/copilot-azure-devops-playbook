@@ -41,4 +41,11 @@ layer-specific rules are in `domain-layer`, `application-layer` and `infrastruct
 | Component tests | One deployable component end to end, in memory | No |
 | Integration tests | Several components together in a real environment | Yes |
 
-Write component tests by default. See the `component-tests` and `integration-tests` instructions.
+Write component tests by default. See `dotnet-tests.instructions.md` and
+`integration-tests.instructions.md`.
+
+## After a refactor
+
+- Search for public and internal members that are no longer used — log methods, helpers, constants,
+  extension methods — and remove them in the same change. The compiler does not warn about unused
+  public members, so they pile up silently.

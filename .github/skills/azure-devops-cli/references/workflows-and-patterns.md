@@ -585,6 +585,11 @@ bulk_update_work_items() {
 
 ### Branch Policy Automation
 
+> **Playbook note (not upstream):** this example changes branch policies. An agent must never run
+> it, or any other policy change, unless the user explicitly asks for that exact policy change in
+> the current request. See the "Critical rules" in the playbook's
+> `templates/copilot-instructions.azure-devops.md`.
+
 ```bash
 # Apply branch policies to all repositories
 apply_branch_policies() {

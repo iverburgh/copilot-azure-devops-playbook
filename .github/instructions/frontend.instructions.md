@@ -1,5 +1,5 @@
 ---
-description: 'Frontend rules for React with TypeScript: structure, typing, error handling, linting, comments and the split between unit and component tests.'
+description: 'Frontend rules for React with TypeScript: structure, typing, forms, error handling, linting, comments and the split between unit and component tests.'
 applyTo: 'ui/**'
 ---
 
@@ -51,6 +51,26 @@ export const useAuth = () => {
     return ctx;
 };
 ```
+
+## Forms
+
+- One form stack for the whole application: react-hook-form with a Zod schema through `zodResolver`.
+- Validators used by more than one feature live in `shared/`; a feature's form schema stays in its
+  feature folder.
+- When the schema transforms values (input type differs from output type), type the form with both
+  and always pass the generics explicitly:
+
+  ```ts
+  const form = useForm<z.input<typeof schema>, unknown, z.output<typeof schema>>({
+      resolver: zodResolver(schema),
+  });
+  ```
+
+- When input and output are the same type `T`, tie the schema to `T` with a small helper such as
+  `formSchema<T>()(schema)`, so a field missing from the schema is a compile error. Zod strips unknown
+  keys by default: a field that is not in the schema silently disappears from the submitted data.
+- Configure default error messages once, centrally. Give a field-specific message for checks whose
+  default is unclear to a user, such as `positive()`.
 
 ## Errors from the API
 
