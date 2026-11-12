@@ -131,6 +131,9 @@ Companion repositories cover topics that agents in this playbook touch:
 - [ddd-dotnet-playbook](https://github.com/iverburgh/ddd-dotnet-playbook) — bounded contexts,
   aggregates, domain events and the outbox in a working .NET solution: the architecture that the
   layer instructions and the developer and reviewer agents here guard.
+- [entra-app-registrations-as-code-playbook](https://github.com/iverburgh/entra-app-registrations-as-code-playbook) —
+  app registrations, roles and access as code, with instructions for API authorization that agents
+  can follow.
 
 ## Further reading
 
