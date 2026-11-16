@@ -83,6 +83,9 @@ await act.Should().ThrowAsync<OrderNotFoundException>().WithMessage("*not found*
   `await using var fixture = ...`).
 - The fixture exposes the act methods directly and groups the rest in two helper objects:
   `fixture.Arrange` for setup and `fixture.Assert` for verification.
+- Every production entry point — endpoint, trigger or message handler — has a matching act method on
+  the fixture (`Run...Trigger`, `Call...`). When one is missing, add it to the fixture rather than
+  resolving the trigger inside the test.
 - Test methods contain **no** mock `Setup` or `Verify` calls, no raw SQL, no feature flag setup and no
   container code. Each of those goes into a named method on `fixture.Arrange` or `fixture.Assert`, so
   the test states *what* and the fixture knows *how*. Mock fields stay internal to the fixture.

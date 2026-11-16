@@ -150,6 +150,8 @@ Companion repositories cover topics that agents in this playbook touch:
   complete, abandon or dead-letter: one policy for what happens to a message when its handler fails.
 - [azure-sql-disaster-recovery-playbook](https://github.com/iverburgh/azure-sql-disaster-recovery-playbook) —
   a guided point-in-time restore, with a skill that coaches an agent through it step by step.
+- [azure-devops-environments-as-code-playbook](https://github.com/iverburgh/azure-devops-environments-as-code-playbook) —
+  environments, approvals and checks as code, plus pipelines that deploy, redeploy or remove a whole environment.
 
 ## Further reading
 
