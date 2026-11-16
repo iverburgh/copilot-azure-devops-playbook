@@ -139,6 +139,11 @@ Companion repositories cover topics that agents in this playbook touch:
   can follow.
 - [azure-functions-circuit-breaker-playbook](https://github.com/iverburgh/azure-functions-circuit-breaker-playbook) —
   a shared circuit breaker on Durable Entities, with a client library and a management console.
+- [dotnet-http-resilience-playbook](https://github.com/iverburgh/dotnet-http-resilience-playbook) —
+  retries, timeouts and outbound throttling for `HttpClient`, with a checklist per dependency.
+- [dotnet-opentelemetry-observability-playbook](https://github.com/iverburgh/dotnet-opentelemetry-observability-playbook) —
+  traces, metrics and logs with OpenTelemetry and Application Insights, and the KQL that agents
+  investigating production issues run.
 
 ## Further reading
 
