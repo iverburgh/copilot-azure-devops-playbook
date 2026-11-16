@@ -144,6 +144,12 @@ Companion repositories cover topics that agents in this playbook touch:
 - [dotnet-opentelemetry-observability-playbook](https://github.com/iverburgh/dotnet-opentelemetry-observability-playbook) —
   traces, metrics and logs with OpenTelemetry and Application Insights, and the KQL that agents
   investigating production issues run.
+- [azure-sql-database-as-code-playbook](https://github.com/iverburgh/azure-sql-database-as-code-playbook) —
+  schema, migrations and seed data as SQL projects, with instructions and a skill for database work.
+- [azure-functions-service-bus-settlement-playbook](https://github.com/iverburgh/azure-functions-service-bus-settlement-playbook) —
+  complete, abandon or dead-letter: one policy for what happens to a message when its handler fails.
+- [azure-sql-disaster-recovery-playbook](https://github.com/iverburgh/azure-sql-disaster-recovery-playbook) —
+  a guided point-in-time restore, with a skill that coaches an agent through it step by step.
 
 ## Further reading
 
