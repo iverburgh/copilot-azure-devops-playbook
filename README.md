@@ -124,6 +124,9 @@ Companion repositories cover topics that agents in this playbook touch:
 - [renovate-azure-devops-playbook](https://github.com/iverburgh/renovate-azure-devops-playbook) —
   automated dependency updates with Renovate on Azure DevOps: a bot opens the pull requests, the
   build is the check.
+- [azure-devops-path-filter-playbook](https://github.com/iverburgh/azure-devops-path-filter-playbook) —
+  path filters on pipeline triggers and build policies, so only the apps a change touches are built
+  and deployed. The background for the `path-filter-sync` skill.
 - [azure-app-configuration-playbook](https://github.com/iverburgh/azure-app-configuration-playbook) —
   settings, feature flags and Key Vault references as code, deployed and rolled back together with
   the application. The background for the
@@ -134,6 +137,8 @@ Companion repositories cover topics that agents in this playbook touch:
 - [entra-app-registrations-as-code-playbook](https://github.com/iverburgh/entra-app-registrations-as-code-playbook) —
   app registrations, roles and access as code, with instructions for API authorization that agents
   can follow.
+- [azure-functions-circuit-breaker-playbook](https://github.com/iverburgh/azure-functions-circuit-breaker-playbook) —
+  a shared circuit breaker on Durable Entities, with a client library and a management console.
 
 ## Further reading
 
